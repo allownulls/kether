@@ -1,0 +1,183 @@
+﻿using System.Numerics;
+using System.Threading.Tasks;
+using System.Threading;
+
+using Nethereum.Web3;
+using Nethereum.Util;
+using Nethereum.RPC.Eth.DTOs;
+
+using Nethereum.Hex.HexTypes;
+using Nethereum.Hex.HexConvertors;
+
+using Kether.Models;
+
+namespace Kether
+{
+    public class Ethereum : IContract
+    {
+        protected Web3 _web3;
+
+        protected ContractSettings contractSettings;
+
+        protected Nethereum.Hex.HexTypes.HexBigInteger _curTxCount;
+
+        public Ethereum() { }
+
+        public Ethereum(string contractAddress, string abi, string senderAddress, string senderPrimaryKey, string node)
+        {
+            contractSettings = new ContractSettings()
+            {
+                ContractAddress = contractAddress,
+                Abi = abi,
+                SenderAddress = senderAddress,
+                SenderPrimaryKey = senderPrimaryKey,
+                EthNode = node
+            };
+
+            _web3 = new Web3(node);
+        }
+
+        public Ethereum(ContractSettings settings)
+        {
+            contractSettings = settings;
+
+            _web3 = new Web3(settings.EthNode);
+        }
+
+        protected Nethereum.Hex.HexTypes.HexBigInteger getNewTxCount()
+        {
+            Nethereum.Hex.HexTypes.HexBigInteger ret = new Nethereum.Hex.HexTypes.HexBigInteger(_curTxCount);
+
+            _curTxCount = new Nethereum.Hex.HexTypes.HexBigInteger(_curTxCount.Value + new BigInteger(1));
+
+            return ret;
+        }
+
+        public async Task<bool> UnlockAsync()
+        {
+            return await _web3.Personal.UnlockAccount.SendRequestAsync(contractSettings.SenderAddress, contractSettings.SenderPrimaryKey, 30);
+        }
+
+        public async Task<bool> TestHashStoreAsync(string hash)
+        {
+            var contract = _web3.Eth.GetContract(contractSettings.Abi, contractSettings.ContractAddress);
+
+            var isExist = contract.GetFunction("does_header_exist");
+
+            var result = await isExist.CallAsync<bool>(hash);
+
+            return result;
+        }
+
+        public string GetFunctionData(string functionName, object[] args)
+        {
+            var contract = _web3.Eth.GetContract(contractSettings.Abi, contractSettings.ContractAddress);
+
+            var saveHash = contract.GetFunction(functionName);
+
+            var result = saveHash.GetData(args);
+
+            return result;
+        }
+
+        public async Task<T> CallContractFunctionAsync<T>(string functionName, string[] argsBase64) where T:struct
+        {
+            var contract = _web3.Eth.GetContract(contractSettings.Abi, contractSettings.ContractAddress);
+
+            var function = contract.GetFunction(functionName); //"saveHeaderHash"
+            
+            var result = await function.CallAsync<T>(argsBase64);
+
+            return result;
+        }
+
+        public async Task<string> SendToNetworkAsync(string functionData)
+        {
+            string errMessage = string.Empty;
+
+            string txId = null;
+            bool retry = true;
+            int retryCount = 0;
+
+            while (retry)
+            {
+                retryCount++;
+
+                if (_curTxCount == null)
+                    _curTxCount = await _web3.Eth.Transactions.GetTransactionCount.SendRequestAsync(contractSettings.SenderAddress);
+
+                var gasPriceGwei = await _web3.Eth.GasPrice.SendRequestAsync();
+
+                var gasPrice = new BigInteger(UnitConversion.Convert.FromWei(gasPriceGwei));
+
+                var encoded = Web3.OfflineTransactionSigner.SignTransaction(contractSettings.SenderPrimaryKey, new BigInteger(3), contractSettings.ContractAddress, 0, getNewTxCount().Value, gasPriceGwei, 300000, functionData);
+
+                try
+                {
+                    txId = await _web3.Eth.Transactions.SendRawTransaction.SendRequestAsync("0x" + encoded);
+                }
+                catch (System.Exception e)
+                {
+                    errMessage = e.Message;
+                    Thread.Sleep(10000);
+                }
+
+                if (txId != null || retryCount > 10)
+                {
+                    retry = false;
+                }
+                else
+                {
+                    _curTxCount = null;
+                }
+            }
+
+            return txId;
+
+        }
+
+        public async Task<EventData> GetEventDataAsync(string eventName, string filterBlockNumber)
+        {
+            //Infura doesn't support the filters, so have to request GetAllChanges.
+            //In case using another service, could be done this way:
+            //var filterAll = await hashCreated.CreateFilterAsync();
+            //var log = await hashCreated.GetFilterChanges<HashCreatedEvent>(filterAll);
+
+            var contract = _web3.Eth.GetContract(contractSettings.Abi, contractSettings.ContractAddress);
+            var hashCreated = contract.GetEvent(eventName);// "FileProofHashCreated"
+            var BlockNumber = ulong.Parse(filterBlockNumber);//new Nethereum.Hex.HexTypes.HexBigInteger(filterBlockNumber);
+            var filterAll = hashCreated.CreateFilterInput(new Nethereum.RPC.Eth.DTOs.BlockParameter(BlockNumber), null);
+
+            var log = await hashCreated.GetAllChanges<HashCreatedEvent>(filterAll);
+
+            var retTimestamp = log[0].Event.Timestamp.ToString();
+
+            var retValue = System.Convert.ToBase64String(log[0].Event.HeaderHash);
+
+            return new EventData { Timestamp = retTimestamp, Value = retValue };
+        }
+
+        public async Task<TransactionData> GetTxDataAsync(string txId)
+        {
+            var receipt = await GetReceiptAsync(txId);
+
+            var retBlockNumber = receipt.BlockNumber.Value.ToString();            
+            var retDataAddress = receipt.TransactionHash;            
+
+            return new TransactionData { BlockNumber = retBlockNumber, DataAddress = retDataAddress};
+        }
+
+        public async Task<TransactionReceipt> GetReceiptAsync(string transactionHash)
+        {
+            var receipt = await _web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
+
+            while (receipt == null)
+            {
+                Thread.Sleep(1000);
+                receipt = await _web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
+            }
+
+            return receipt;
+        }        
+    }
+} 
