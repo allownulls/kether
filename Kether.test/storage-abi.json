@@ -1,0 +1,107 @@
+[
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "headerHash",
+        "type": "bytes32"
+      }
+    ],
+    "name": "saveHeaderHash",
+    "outputs": [
+
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "header_hash",
+        "type": "bytes32"
+      }
+    ],
+    "name": "does_header_exist",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "name": "Hashes",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+
+    ],
+    "name": "owner",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "validator",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "headerHash",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "name": "creation_timestamp",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "headers_count",
+        "type": "uint256"
+      }
+    ],
+    "name": "FileProofHashCreated",
+    "type": "event"
+  }
+]

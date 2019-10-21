@@ -96,5 +96,17 @@ namespace Kether
 
             return ret;
         }
+        public async Task<bool> mintAsync(string toAddress, string amount)
+        {
+            var hexAmount = BigInteger.Multiply(BigInteger.Parse(amount), 1000000000000000000).ToString("x");
+
+            var contractFuncData = eth.GetFunctionData("mint", new string[] { toAddress, hexAmount });
+            string txId = await eth.SendToNetworkAsync(contractFuncData);
+
+            bool ret = !String.IsNullOrEmpty(txId);
+
+            return ret;
+        }
+
     }
 }

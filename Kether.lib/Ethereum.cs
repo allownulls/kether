@@ -58,17 +58,12 @@ namespace Kether
             return await _web3.Personal.UnlockAccount.SendRequestAsync(contractSettings.SenderAddress, contractSettings.SenderPrimaryKey, 30);
         }
 
-        public async Task<bool> TestHashStoreAsync(string hash)
-        {
-            var contract = _web3.Eth.GetContract(contractSettings.Abi, contractSettings.ContractAddress);
-
-            var isExist = contract.GetFunction("does_header_exist");
-
-            var result = await isExist.CallAsync<bool>(hash);
-
-            return result;
-        }
-
+        /// <summary>
+        /// Prepare data for sending transaction (when function changes the net state)
+        /// </summary>
+        /// <param name="functionName">Smartcontract function name</param>
+        /// <param name="args">Smartcontract function parameters</param>
+        /// <returns></returns>
         public string GetFunctionData(string functionName, object[] args)
         {
             var contract = _web3.Eth.GetContract(contractSettings.Abi, contractSettings.ContractAddress);
@@ -80,6 +75,13 @@ namespace Kether
             return result;
         }
 
+        /// <summary>
+        /// call smartcontract function (when function doesn't change the net state)
+        /// </summary>
+        /// <typeparam name="T">Smartcontract function return type</typeparam>
+        /// <param name="functionName">Smartcontract function name</param>
+        /// <param name="args">Smartcontract function parameters</param>
+        /// <returns></returns>
         public async Task<T> CallContractFunctionAsync<T>(string functionName, string[] argsBase64) where T:struct
         {
             var contract = _web3.Eth.GetContract(contractSettings.Abi, contractSettings.ContractAddress);
@@ -90,7 +92,12 @@ namespace Kether
 
             return result;
         }
-
+        
+        /// <summary>
+        /// send the transaction using prepared data
+        /// </summary>
+        /// <param name="functionData"></param>
+        /// <returns></returns>
         public async Task<string> SendToNetworkAsync(string functionData)
         {
             string errMessage = string.Empty;
@@ -136,6 +143,12 @@ namespace Kether
 
         }
 
+        /// <summary>
+        /// get the first event starting from specified block
+        /// </summary>
+        /// <param name="eventName">event name</param>
+        /// <param name="filterBlockNumber">64-bit block number</param>
+        /// <returns></returns>
         public async Task<EventData> GetEventDataAsync(string eventName, string filterBlockNumber)
         {
             //Infura doesn't support the filters, so have to request GetAllChanges.
@@ -144,8 +157,8 @@ namespace Kether
             //var log = await hashCreated.GetFilterChanges<HashCreatedEvent>(filterAll);
 
             var contract = _web3.Eth.GetContract(contractSettings.Abi, contractSettings.ContractAddress);
-            var hashCreated = contract.GetEvent(eventName);// "FileProofHashCreated"
-            var BlockNumber = ulong.Parse(filterBlockNumber);//new Nethereum.Hex.HexTypes.HexBigInteger(filterBlockNumber);
+            var hashCreated = contract.GetEvent(eventName);
+            var BlockNumber = ulong.Parse(filterBlockNumber);
             var filterAll = hashCreated.CreateFilterInput(new Nethereum.RPC.Eth.DTOs.BlockParameter(BlockNumber), null);
 
             var log = await hashCreated.GetAllChanges<HashCreatedEvent>(filterAll);
@@ -157,6 +170,11 @@ namespace Kether
             return new EventData { Timestamp = retTimestamp, Value = retValue };
         }
 
+        /// <summary>
+        /// get full transaction data
+        /// </summary>
+        /// <param name="txId"></param>
+        /// <returns></returns>
         public async Task<TransactionData> GetTxDataAsync(string txId)
         {
             var receipt = await GetReceiptAsync(txId);
@@ -167,6 +185,11 @@ namespace Kether
             return new TransactionData { BlockNumber = retBlockNumber, DataAddress = retDataAddress};
         }
 
+        /// <summary>
+        /// get transaction information (block number, transaction hash)
+        /// </summary>
+        /// <param name="transactionHash"></param>
+        /// <returns></returns>
         public async Task<TransactionReceipt> GetReceiptAsync(string transactionHash)
         {
             var receipt = await _web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
