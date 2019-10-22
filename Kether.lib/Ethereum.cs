@@ -82,13 +82,13 @@ namespace Kether
         /// <param name="functionName">Smartcontract function name</param>
         /// <param name="args">Smartcontract function parameters</param>
         /// <returns></returns>
-        public async Task<T> CallContractFunctionAsync<T>(string functionName, string[] argsBase64) where T:struct
+        public async Task<T> CallContractFunctionAsync<T>(string functionName, object[] args) where T:struct
         {
             var contract = _web3.Eth.GetContract(contractSettings.Abi, contractSettings.ContractAddress);
 
-            var function = contract.GetFunction(functionName); //"saveHeaderHash"
+            var function = contract.GetFunction(functionName);
             
-            var result = await function.CallAsync<T>(argsBase64);
+            var result = await function.CallAsync<T>(args);
 
             return result;
         }
