@@ -9,5 +9,9 @@ namespace Kether.Models
         public string BlockNumber { get; set; }
 
         public string DataAddress { get; set; }
+
+        public string LogData { get; set; }
+
+        public string ContractAddress { get; set; }
     }
 }

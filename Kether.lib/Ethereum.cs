@@ -171,19 +171,39 @@ namespace Kether
         }
 
         /// <summary>
-        /// get full transaction data
+        /// get full transaction data from receipt
         /// </summary>
         /// <param name="txId"></param>
-        /// <returns></returns>
-        public async Task<TransactionData> GetTxDataAsync(string txId)
+        /// <returns></returns> 
+        public async Task<TransactionData> GetReceiptTxDataAsync(string txId)
         {
             var receipt = await GetReceiptAsync(txId);
 
             var retBlockNumber = receipt.BlockNumber.Value.ToString();            
             var retDataAddress = receipt.TransactionHash;            
+            var retTokenAmount = receipt.Logs[0].Value<System.String>("data");
+            var retTokenContract = receipt.Logs[0]["address"].ToString();
 
-            return new TransactionData { BlockNumber = retBlockNumber, DataAddress = retDataAddress};
+            return new TransactionData { BlockNumber = retBlockNumber, DataAddress = retDataAddress, LogData = retTokenAmount, ContractAddress = retTokenContract };
         }
+
+        /// <summary>
+        /// get full transaction data from receipt
+        /// </summary>
+        /// <param name="txId"></param>
+        /// <returns></returns> 
+        public async Task<TransactionData> GetTxDataAsync(string txId)
+        {
+            var receipt = await _web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(txId);
+
+            var retBlockNumber = receipt.BlockNumber.Value.ToString();
+            var retDataAddress = receipt.TransactionHash;
+//            var retTokenAmount = receipt.Logs[0].Value<System.String>("data");
+//            var retTokenContract = receipt.Logs[0]["address"].ToString();
+
+            return new TransactionData { BlockNumber = retBlockNumber, DataAddress = retDataAddress/*, LogData = retTokenAmount, ContractAddress = retTokenContract */};
+        }
+
 
         /// <summary>
         /// get transaction information (block number, transaction hash)
@@ -193,14 +213,15 @@ namespace Kether
         public async Task<TransactionReceipt> GetReceiptAsync(string transactionHash)
         {
             var receipt = await _web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
-
-            while (receipt == null)
+            
+            int n = 10;
+            while (receipt == null && --n >= 0)
             {
                 Thread.Sleep(1000);
                 receipt = await _web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
             }
 
             return receipt;
-        }        
+        }
     }
 } 

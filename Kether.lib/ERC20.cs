@@ -108,5 +108,10 @@ namespace Kether
             return ret;
         }
 
+        new public async Task<TransactionData> GetTxDataAsync(string txId)
+        {
+            return await eth.GetReceiptTxDataAsync(txId);//eth.GetTxDataAsync(txId);
+        }
+
     }
 }
