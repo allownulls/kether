@@ -13,5 +13,7 @@ namespace Kether.Models
         public string LogData { get; set; }
 
         public string ContractAddress { get; set; }
+
+        public string DebugInfo { get; set; }
     }
 }

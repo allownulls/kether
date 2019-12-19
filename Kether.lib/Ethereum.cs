@@ -194,16 +194,28 @@ namespace Kether
         /// <returns></returns> 
         public async Task<TransactionData> GetTxDataAsync(string txId)
         {
-            var receipt = await _web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(txId);
+            TransactionReceipt receipt = null;
 
+            int i = 0;
+            var timeStart = System.DateTime.Now;
+
+            while (receipt == null && i++ < 50)
+            {
+                Thread.Sleep(1000);
+                receipt = await _web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(txId);
+            }
+
+            var timeElapsed = System.DateTime.Now - timeStart;
+           
             var retBlockNumber = receipt.BlockNumber.Value.ToString();
             var retDataAddress = receipt.TransactionHash;
 //            var retTokenAmount = receipt.Logs[0].Value<System.String>("data");
 //            var retTokenContract = receipt.Logs[0]["address"].ToString();
 
-            return new TransactionData { BlockNumber = retBlockNumber, DataAddress = retDataAddress/*, LogData = retTokenAmount, ContractAddress = retTokenContract */};
-        }
+            string debugInfo = $"tried {i} times, took {timeElapsed.ToString("fff")} ms";
 
+            return new TransactionData { BlockNumber = retBlockNumber, DataAddress = retDataAddress/*, LogData = retTokenAmount, ContractAddress = retTokenContract */, DebugInfo = debugInfo};
+        }
 
         /// <summary>
         /// get transaction information (block number, transaction hash)

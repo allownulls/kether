@@ -63,6 +63,7 @@ namespace Kether.Test
             output.WriteLine($"Timestamp: {eventData.Timestamp}");
             output.WriteLine($"Stored Value: {eventData.Value}");
             output.WriteLine($"Test hash value: {testHashValue}");
+            output.WriteLine($"Sending to network: {txData.DebugInfo}");
 
             string eventValue = Encoding.UTF8.GetString(System.Convert.FromBase64String(eventData.Value));
 
