@@ -6,7 +6,7 @@ using Nethereum.Hex.HexConvertors;
 
 using System.IO;
 
-namespace Kether.test
+namespace Kether.Test
 {
     //0xc844EF8252481408Be0bcFd096754Ff262B50B4e
     //0xd7c2c73a5c36bb61cbbf7c02a9bee6bf8df8a129

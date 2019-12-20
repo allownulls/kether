@@ -98,7 +98,7 @@ namespace Kether
         }
         public async Task<bool> mintAsync(string toAddress, string amount)
         {
-            var hexAmount = BigInteger.Multiply(BigInteger.Parse(amount), 1000000000000000000).ToString("x");
+            var hexAmount = Util.GetBigInt(amount).ToString("x");
 
             var contractFuncData = eth.GetFunctionData("mint", new string[] { toAddress, hexAmount });
             string txId = await eth.SendToNetworkAsync(contractFuncData);
