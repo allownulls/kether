@@ -10,9 +10,9 @@ namespace Kether.Test
     public class Util
     {
         [Fact]
-        public async void GetBigInt()
+        public void GetBigInt()
         {
-            string amount = "1.1234";
+            string amount = "0.1234";
             string proper = "123400000000000000";
 
             BigInteger result = Kether.Util.GetBigInt(amount);

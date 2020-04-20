@@ -13,12 +13,8 @@ namespace Kether.Test
     {
         private readonly ITestOutputHelper output;
 
-        const string ethContractAddress = "0x816a772c93dd3d62c05d58eff9e3739502fcf2b6";        
-        const string ethSenderAddress = "0x949A6d7D69A72795301472199eB0255a030B0462";
-        const string ethSenderPK = "42e301d528240956beb9801af5be6e1fc7836630f86046700e7912585b24969d";        
-        const string ethNode = "https://ropsten.infura.io/ALJyYuZ7YioSxeuzglYz";
-
         string ethAbi;
+        dynamic config;
 
         public Ethereum(ITestOutputHelper output)
         {
@@ -28,6 +24,15 @@ namespace Kether.Test
             {
                 ethAbi = r.ReadToEnd();
             }
+
+            string json;
+
+            using (StreamReader r = new StreamReader("storage-config.json"))
+            {
+                json = r.ReadToEnd();
+            }
+
+            config = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
         }
 
         [Fact]
@@ -38,11 +43,11 @@ namespace Kether.Test
 
             string testHashValue = "test hash value";
 
-            Kether.Ethereum eth = new Kether.Ethereum(ethContractAddress,
+            Kether.Ethereum eth = new Kether.Ethereum((string)config.contractAddress,
                                                       ethAbi,
-                                                      ethSenderAddress,
-                                                      ethSenderPK,
-                                                      ethNode
+                                                      (string)config.senderAddress,
+                                                      (string)config.senderPK,
+                                                      (string)config.node
                 );
 
             var contractFuncData = eth.GetFunctionData(ethMethodName, new string[] { testHashValue });
@@ -76,11 +81,11 @@ namespace Kether.Test
             string ethMethodName = "does_header_exist";            
             string testHashValue = "test hash value";
 
-            Kether.Ethereum eth = new Kether.Ethereum(ethContractAddress,
+            Kether.Ethereum eth = new Kether.Ethereum((string)config.contractAddress,
                                                       ethAbi,
                                                       null,
                                                       null,
-                                                      ethNode
+                                                      (string)config.node
                 );
 
             bool check = await eth.CallContractFunctionAsync<bool>(ethMethodName, new string[] { testHashValue });
