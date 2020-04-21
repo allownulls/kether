@@ -1,10 +1,7 @@
 ﻿using System;
+using System.IO;
 using Xunit;
 using Xunit.Abstractions;
-using Nethereum.Hex.HexTypes;
-using Nethereum.Hex.HexConvertors;
-
-using System.IO;
 
 namespace Kether.Test
 {

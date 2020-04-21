@@ -1,11 +1,8 @@
 using System;
+using System.IO;
+using System.Text;
 using Xunit;
 using Xunit.Abstractions;
-using Kether;
-using Kether.Models;
-using System.Text;
-
-using System.IO;
 
 namespace Kether.Test
 {

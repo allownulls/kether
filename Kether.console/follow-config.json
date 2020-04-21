@@ -1,0 +1,8 @@
+{
+  "contractAddress": "0x9bE49E6FE0bd2aca0bE21143D318b7E1fA97E48a",
+  "ownerAddress": "0xd7c2c73a5c36bb61cbbf7c02a9bee6bf8df8a129",
+  "ownerPK": "9114fe5123b1a685cb20550ddfeb66be71cf267299225e82e19c9909c5e31d7e",
+  "userAddress": "0x949A6d7D69A72795301472199eB0255a030B0462",
+  "userPK": "42e301d528240956beb9801af5be6e1fc7836630f86046700e7912585b24969d",
+  "node": "https://ropsten.infura.io/v3/465c40b6d20d4842aa6451ff67921d12"
+}

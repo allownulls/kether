@@ -2,14 +2,10 @@
 using System.Numerics;
 using System.Threading.Tasks;
 using System.Threading;
-
 using Nethereum.Web3;
 using Nethereum.Util;
 using Nethereum.RPC.Eth.DTOs;
-
 using Nethereum.Hex.HexTypes;
-//using Nethereum.Hex.HexConvertors;
-
 using Kether.Models;
 
 namespace Kether

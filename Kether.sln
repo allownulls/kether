@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.29009.5
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kether.lib", "Kether.lib\Kether.lib.csproj", "{64278F98-D7AE-4F6A-9654-6059193765FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kether.test", "Kether.test\Kether.test.csproj", "{F7B34803-78BA-4DC3-8096-B25EC3E04CE9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kether.test", "Kether.test\Kether.test.csproj", "{F7B34803-78BA-4DC3-8096-B25EC3E04CE9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kether.console", "Kether.console\Kether.console.csproj", "{2CA82001-FB83-4824-9523-F2EC8B4CE2B9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{F7B34803-78BA-4DC3-8096-B25EC3E04CE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7B34803-78BA-4DC3-8096-B25EC3E04CE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7B34803-78BA-4DC3-8096-B25EC3E04CE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CA82001-FB83-4824-9523-F2EC8B4CE2B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CA82001-FB83-4824-9523-F2EC8B4CE2B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CA82001-FB83-4824-9523-F2EC8B4CE2B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CA82001-FB83-4824-9523-F2EC8B4CE2B9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
