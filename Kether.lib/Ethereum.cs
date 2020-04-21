@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 using System.Threading.Tasks;
 using System.Threading;
 
@@ -7,7 +8,7 @@ using Nethereum.Util;
 using Nethereum.RPC.Eth.DTOs;
 
 using Nethereum.Hex.HexTypes;
-using Nethereum.Hex.HexConvertors;
+//using Nethereum.Hex.HexConvertors;
 
 using Kether.Models;
 
@@ -19,7 +20,7 @@ namespace Kether
 
         protected ContractSettings contractSettings;
 
-        protected Nethereum.Hex.HexTypes.HexBigInteger _curTxCount;
+        protected HexBigInteger _curTxCount;
 
         public Ethereum() { }
 
@@ -44,11 +45,11 @@ namespace Kether
             _web3 = new Web3(settings.EthNode);
         }
 
-        protected Nethereum.Hex.HexTypes.HexBigInteger getNewTxCount()
+        protected HexBigInteger getNewTxCount()
         {
-            Nethereum.Hex.HexTypes.HexBigInteger ret = new Nethereum.Hex.HexTypes.HexBigInteger(_curTxCount);
+            HexBigInteger ret = new HexBigInteger(_curTxCount);
 
-            _curTxCount = new Nethereum.Hex.HexTypes.HexBigInteger(_curTxCount.Value + new BigInteger(1));
+            _curTxCount = new HexBigInteger(_curTxCount.Value + new BigInteger(1));
 
             return ret;
         }
@@ -123,7 +124,7 @@ namespace Kether
                 {
                     txId = await _web3.Eth.Transactions.SendRawTransaction.SendRequestAsync("0x" + encoded);
                 }
-                catch (System.Exception e)
+                catch (Exception e)
                 {
                     errMessage = e.Message;
                     Thread.Sleep(10000);
@@ -140,7 +141,6 @@ namespace Kether
             }
 
             return txId;
-
         }
 
         /// <summary>
@@ -165,7 +165,7 @@ namespace Kether
 
             var retTimestamp = log[0].Event.Timestamp.ToString();
 
-            var retValue = System.Convert.ToBase64String(log[0].Event.HeaderHash);
+            var retValue = Convert.ToBase64String(log[0].Event.HeaderHash);
 
             return new EventData { Timestamp = retTimestamp, Value = retValue };
         }
@@ -181,7 +181,7 @@ namespace Kether
 
             var retBlockNumber = receipt.BlockNumber.Value.ToString();            
             var retDataAddress = receipt.TransactionHash;            
-            var retTokenAmount = receipt.Logs[0].Value<System.String>("data");
+            var retTokenAmount = receipt.Logs[0].Value<string>("data");
             var retTokenContract = receipt.Logs[0]["address"].ToString();
 
             return new TransactionData { BlockNumber = retBlockNumber, DataAddress = retDataAddress, LogData = retTokenAmount, ContractAddress = retTokenContract };
@@ -197,7 +197,7 @@ namespace Kether
             TransactionReceipt receipt = null;
 
             int i = 0;
-            var timeStart = System.DateTime.Now;
+            var timeStart = DateTime.Now;
 
             while (receipt == null && i++ < 50)
             {
@@ -205,11 +205,11 @@ namespace Kether
                 receipt = await _web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(txId);
             }
 
-            var timeElapsed = System.DateTime.Now - timeStart;
+            var timeElapsed = DateTime.Now - timeStart;
            
             var retBlockNumber = receipt.BlockNumber.Value.ToString();
             var retDataAddress = receipt.TransactionHash;
-//            var retTokenAmount = receipt.Logs[0].Value<System.String>("data");
+//            var retTokenAmount = receipt.Logs[0].Value<string>("data");
 //            var retTokenContract = receipt.Logs[0]["address"].ToString();
 
             string debugInfo = $"tried {i} times, took {timeElapsed.ToString("fff")} ms";

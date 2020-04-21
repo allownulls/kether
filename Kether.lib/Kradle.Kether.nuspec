@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>Kradle.Kether</id>
+        <version>0.2.1</version>
+        <description>Interaction with Ethereum smartcontract</description>
+        <authors>Kradle Consulting</authors>
+    </metadata>
+</package>
