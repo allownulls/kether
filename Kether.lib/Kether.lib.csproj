@@ -6,10 +6,29 @@
   
   <PropertyGroup>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <Version>0.2.1</Version>
+    <Authors>Sergey Drobyshev</Authors>
+    <Company>Kradle Consulting</Company>
+    <Product>Kether</Product>
+    <Description>Ethereum smartcontracts function call wrapper. 
+Can be used for general functions and particular ERC20 contracts.
+Based on Nethereum.</Description>
+    <Copyright>2019 Sergey Drobyshev</Copyright>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageProjectUrl></PackageProjectUrl>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Nethereum.Web3" Version="3.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
