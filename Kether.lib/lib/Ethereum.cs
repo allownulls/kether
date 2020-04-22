@@ -145,7 +145,7 @@ namespace Kether
         /// <param name="eventName">event name</param>
         /// <param name="filterBlockNumber">64-bit block number</param>
         /// <returns></returns>
-        public async Task<EventData> GetEventDataAsync(string eventName, string filterBlockNumber)
+        public async Task<EventData> GetEventDataAsync<Event>(string eventName, string filterBlockNumber) where Event:IEventModel, new()
         {
             //Infura doesn't support the filters, so have to request GetAllChanges.
             //In case using another service, could be done this way:
@@ -157,7 +157,7 @@ namespace Kether
             var BlockNumber = ulong.Parse(filterBlockNumber);
             var filterAll = hashCreated.CreateFilterInput(new Nethereum.RPC.Eth.DTOs.BlockParameter(BlockNumber), null);
 
-            var log = await hashCreated.GetAllChanges<HashCreatedEvent>(filterAll);
+            var log = await hashCreated.GetAllChanges<Event>(filterAll);
 
             var retTimestamp = log[0].Event.Timestamp.ToString();
 

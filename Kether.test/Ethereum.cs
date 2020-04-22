@@ -3,9 +3,27 @@ using System.IO;
 using System.Text;
 using Xunit;
 using Xunit.Abstractions;
+using Nethereum.ABI.FunctionEncoding.Attributes;
+using Kether.Models;
 
 namespace Kether.Test
 {
+    [Event("FileProofHashCreated")]
+    public class HashCreatedEvent : IEventModel
+    {
+        [Parameter("address", "validator", 1, true)]
+        public string Validator { get; set; }
+
+        [Parameter("bytes32", "headerHash", 2, false)]
+        public byte[] HeaderHash { get; set; }
+
+        [Parameter("uint", "creation_timestamp", 3, false)]
+        public int Timestamp { get; set; }
+
+        [Parameter("uint", "headers_count", 4, false)]
+        public int HeadersCount { get; set; }
+    }
+
     public class Ethereum
     {
         private readonly ITestOutputHelper output;
@@ -51,7 +69,7 @@ namespace Kether.Test
             string txId = await eth.SendToNetworkAsync(contractFuncData);
 
             Kether.Models.TransactionData txData = await eth.GetTxDataAsync(txId);
-            Kether.Models.EventData eventData = await eth.GetEventDataAsync(ethEventName, txData.BlockNumber);
+            Kether.Models.EventData eventData = await eth.GetEventDataAsync<HashCreatedEvent>(ethEventName, txData.BlockNumber);
 
             Assert.True(txData != null);
             Assert.True(eventData != null);
